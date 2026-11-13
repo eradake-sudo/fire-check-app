@@ -462,8 +462,8 @@ img.logo {
   border: 1px solid #333 !important;
 }
 #signature-pad {
-  background: #111 !important;
-  border: 1px solid #333 !important;
+  background: #ffffff !important;
+  border: 1px solid #ccc !important;
 }
 </style>
 </head>
@@ -843,7 +843,7 @@ function initSignaturePad() {
     e.preventDefault();
     const pos = getPos(e);
     ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = '#fff';
+    ctx.strokeStyle = '#000';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -1058,30 +1058,15 @@ async function exportPDF() {
 
     if (data.signature && data.signature.length > 100 && data.signature.startsWith('data:image')) {
       try {
-        const inverted = await new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => {
-            const w = img.width || 400;
-            const h = img.height || 160;
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = w;
-            tempCanvas.height = h;
-            const tctx = tempCanvas.getContext('2d');
-            // White background
-            tctx.fillStyle = '#ffffff';
-            tctx.fillRect(0, 0, w, h);
-            // Draw signature
-            tctx.drawImage(img, 0, 0);
-            const imgData = tctx.getImageData(0, 0, w, h);
-            const d = imgData.data;
-            for (let i = 0; i < d.length; i += 4) {
-              const r = d[i], g = d[i+1], b = d[i+2], a = d[i+3];
-              // Only pure white signature strokes (drawn on dark) become black
-              // Dark background pixels stay white
-              const isStroke = (r > 220 && g > 220 && b > 220 && a > 40);
-              if (isStroke) {
-                d[i] = 0; d[i+1] = 0; d[i+2] = 0; d[i+3] = 255;
-              } else {
+        doc.addImage(data.signature, 'PNG', margin, y, 55, 22);
+        y += 26;
+      } catch (e) {
+        doc.setFont(undefined, 'italic');
+        doc.setFontSize(8);
+        doc.text('(Signature could not be rendered)', margin, y + 4);
+        y += 10;
+      }
+    } else {
                 d[i] = 255; d[i+1] = 255; d[i+2] = 255; d[i+3] = 0; // transparent bg
               }
             }
