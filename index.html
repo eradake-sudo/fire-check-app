@@ -775,7 +775,6 @@ function loadChecklist(unitId) {
   document.getElementById('checklist-view').classList.remove('hidden');
   scbaPackCount = 0;
   renderChecklist(data);
-  if (data.scbaPacks > 0) addNextPack();
   initSignaturePad();
 }
 
@@ -799,11 +798,13 @@ function renderChecklist(data) {
     controls.innerHTML = `
       <button type="button" id="next-pack-btn" class="btn primary">Next Pack</button>
       <button type="button" id="finished-btn" class="btn secondary">Finished</button>
-      <span id="pack-counter" style="margin-left:auto;color:#a0a0a0;font-size:0.85rem;">Packs: 0</span>
+      <span id="pack-counter" style="margin-left:auto;color:#a0a0a0;font-size:0.85rem;">Packs completed: 0</span>
     `;
     container.appendChild(controls);
     document.getElementById('next-pack-btn').addEventListener('click', addNextPack);
     document.getElementById('finished-btn').addEventListener('click', showSignatureSection);
+    // Auto-create first pack
+    setTimeout(() => addNextPack(), 0);
   }
 
   // Signature section (hidden until Finished)
