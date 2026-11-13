@@ -739,6 +739,7 @@ const scbaItems = [
 
 let currentUnit = null;
 let signaturePad = null;
+let scbaPackCount = 0;
 
 function init() {
   renderUnitGrid();
@@ -772,6 +773,7 @@ function loadChecklist(unitId) {
   document.getElementById('checklist-title').textContent = data.name;
   document.getElementById('unit-select').classList.add('hidden');
   document.getElementById('checklist-view').classList.remove('hidden');
+  scbaPackCount = 0;
   renderChecklist(data);
   initSignaturePad();
 }
@@ -788,24 +790,26 @@ function renderChecklist(data) {
     container.appendChild(section);
   }
 
-  for (let i = 0; i < data.scbaPacks; i++) {
-    const section = document.createElement('div');
-    section.className = 'section';
-    section.innerHTML = `<div class="section-title">SCBA</div>`;
-    scbaItems.forEach((item, j) => section.appendChild(createItemRow(item, `pack-${i}-${j}`)));
-    container.appendChild(section);
+  // SCBA multi-pack workflow
+  if (data.scbaPacks > 0) {
+    const controls = document.createElement('div');
+    controls.className = 'section';
+    controls.style.padding = '1rem';
+    controls.innerHTML = `
+      <button type="button" id="next-pack-btn" class="btn primary">Next Pack</button>
+      <button type="button" id="finished-btn" class="btn secondary" style="margin-left:0.5rem;">Finished</button>
+      <span id="pack-counter" style="margin-left:1rem;color:#a0a0a0;font-size:0.85rem;">Packs completed: 0</span>
+    `;
+    container.appendChild(controls);
+    document.getElementById('next-pack-btn').addEventListener('click', addNextPack);
+    document.getElementById('finished-btn').addEventListener('click', showSignatureSection);
   }
 
-  for (let i = 0; i < data.scbaBottles; i++) {
-    const section = document.createElement('div');
-    section.className = 'section';
-    section.innerHTML = `<div class="section-title">SCBA Bottle #${i + 1}</div>`;
-    scbaItems.forEach((item, j) => section.appendChild(createItemRow(item, `bottle-${i}-${j}`)));
-    container.appendChild(section);
-  }
-
+  // Signature section (hidden until Finished)
   const sigSection = document.createElement('div');
   sigSection.className = 'section signature-section';
+  sigSection.id = 'signature-section';
+  sigSection.style.display = data.scbaPacks > 0 ? 'none' : 'block';
   sigSection.innerHTML = `
     <div class="section-title">Completed By</div>
     <div class="sig-fields">
@@ -820,6 +824,28 @@ function renderChecklist(data) {
     </div>
   `;
   container.appendChild(sigSection);
+}
+
+function addNextPack() {
+  scbaPackCount++;
+  const container = document.getElementById('checklist-content');
+  const sigSection = document.getElementById('signature-section');
+  const section = document.createElement('div');
+  section.className = 'section';
+  section.innerHTML = `<div class="section-title">SCBA Pack ${scbaPackCount}</div>`;
+  scbaItems.forEach((item, j) => section.appendChild(createItemRow(item, `pack-${scbaPackCount}-${j}`)));
+  container.insertBefore(section, sigSection);
+  document.getElementById('pack-counter').textContent = `Packs completed: ${scbaPackCount}`;
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showSignatureSection() {
+  const sig = document.getElementById('signature-section');
+  if (sig) {
+    sig.style.display = 'block';
+    sig.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    initSignaturePad();
+  }
 }
 
 function initSignaturePad() {
@@ -981,8 +1007,11 @@ async function exportPDF() {
     const allItems = [];
     const unit = checklists[currentUnit];
     if (unit.mainItems) unit.mainItems.forEach((label, i) => allItems.push({ label, key: `main-${i}`, section: 'Apparatus' }));
-    for (let p = 0; p < (unit.scbaPacks || 0); p++) {
-      scbaItems.forEach((label, i) => allItems.push({ label, key: `pack-${p}-${i}`, section: `SCBA` }));
+    // Collect all packs that were added
+    for (let p = 1; p <= 50; p++) {
+      const firstKey = `pack-${p}-0`;
+      if (!data.items[firstKey]) break;
+      scbaItems.forEach((label, i) => allItems.push({ label, key: `pack-${p}-${i}`, section: `SCBA Pack ${p}` }));
     }
     for (let b = 0; b < (unit.scbaBottles || 0); b++) {
       scbaItems.forEach((label, i) => allItems.push({ label, key: `bottle-${b}-${i}`, section: `SCBA Bottle #${b+1}` }));
