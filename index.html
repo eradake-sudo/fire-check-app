@@ -775,6 +775,7 @@ function loadChecklist(unitId) {
   document.getElementById('checklist-view').classList.remove('hidden');
   scbaPackCount = 0;
   renderChecklist(data);
+  if (data.scbaPacks > 0) addNextPack();
   initSignaturePad();
 }
 
@@ -793,12 +794,12 @@ function renderChecklist(data) {
   // SCBA multi-pack workflow
   if (data.scbaPacks > 0) {
     const controls = document.createElement('div');
-    controls.className = 'section';
-    controls.style.padding = '1rem';
+    controls.id = 'scba-controls';
+    controls.style.cssText = 'position:sticky;bottom:0;background:#1a1a1a;padding:0.75rem 1rem;border-top:1px solid #333;display:flex;align-items:center;gap:0.5rem;z-index:10;';
     controls.innerHTML = `
       <button type="button" id="next-pack-btn" class="btn primary">Next Pack</button>
-      <button type="button" id="finished-btn" class="btn secondary" style="margin-left:0.5rem;">Finished</button>
-      <span id="pack-counter" style="margin-left:1rem;color:#a0a0a0;font-size:0.85rem;">Packs completed: 0</span>
+      <button type="button" id="finished-btn" class="btn secondary">Finished</button>
+      <span id="pack-counter" style="margin-left:auto;color:#a0a0a0;font-size:0.85rem;">Packs: 0</span>
     `;
     container.appendChild(controls);
     document.getElementById('next-pack-btn').addEventListener('click', addNextPack);
