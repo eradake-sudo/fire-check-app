@@ -994,7 +994,7 @@ async function exportPDF() {
         doc.addPage();
         y = 15;
       }
-      if (item.section !== currentSection) {
+      if (item.section !== currentSection && item.section !== 'Apparatus') {
         currentSection = item.section;
         y += 3;
         doc.setFont(undefined, 'bold');
@@ -1003,6 +1003,8 @@ async function exportPDF() {
         doc.text(currentSection.toUpperCase(), margin, y);
         doc.setTextColor(0, 0, 0);
         y += 5;
+      } else if (item.section === 'Apparatus') {
+        currentSection = item.section;
       }
 
       const entry = data.items[item.key] || {};
