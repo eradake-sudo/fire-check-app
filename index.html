@@ -820,8 +820,23 @@ function renderChecklist(data) {
     document.body.appendChild(controls);
     document.getElementById('next-pack-btn').addEventListener('click', addNextPack);
     document.getElementById('finished-btn').addEventListener('click', showSignatureSection);
-    // Auto-create first pack
-    if (currentUnit === 'scba') setTimeout(() => addNextPack(), 0);
+    setTimeout(() => addNextPack(), 0);
+  } else {
+    // Static SCBA sections for apparatus
+    for (let i = 0; i < (data.scbaPacks || 0); i++) {
+      const section = document.createElement('div');
+      section.className = 'section';
+      section.innerHTML = `<div class="section-title">SCBA Pack #${i + 1}</div>`;
+      scbaItems.forEach((item, j) => section.appendChild(createItemRow(item, `pack-${i}-${j}`)));
+      container.appendChild(section);
+    }
+    for (let i = 0; i < (data.scbaBottles || 0); i++) {
+      const section = document.createElement('div');
+      section.className = 'section';
+      section.innerHTML = `<div class="section-title">SCBA Bottle #${i + 1}</div>`;
+      scbaItems.forEach((item, j) => section.appendChild(createItemRow(item, `bottle-${i}-${j}`)));
+      container.appendChild(section);
+    }
   }
 
   // Signature section (hidden until Finished)
