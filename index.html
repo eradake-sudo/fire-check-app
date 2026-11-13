@@ -781,6 +781,7 @@ function loadChecklist(unitId) {
 function renderChecklist(data) {
   const container = document.getElementById('checklist-content');
   container.innerHTML = '';
+  container.style.paddingBottom = '80px';
 
   if (data.mainItems.length > 0) {
     const section = document.createElement('div');
@@ -794,7 +795,7 @@ function renderChecklist(data) {
   if (data.scbaPacks > 0) {
     const controls = document.createElement('div');
     controls.id = 'scba-controls';
-    controls.style.cssText = 'position:sticky;bottom:0;background:#1a1a1a;padding:0.75rem 1rem;border-top:1px solid #333;display:flex;align-items:center;gap:0.5rem;z-index:10;';
+    controls.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;padding:0.75rem 1rem;border-top:1px solid #333;display:flex;align-items:center;gap:0.5rem;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,0.4);';
     controls.innerHTML = `
       <button type="button" id="next-pack-btn" class="btn primary">Next Pack</button>
       <button type="button" id="finished-btn" class="btn secondary">Finished</button>
