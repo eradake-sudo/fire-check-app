@@ -808,7 +808,7 @@ function renderChecklist(data) {
   }
 
   // SCBA multi-pack workflow
-  if (data.scbaPacks > 0) {
+  if (currentUnit === 'scba') {
     const controls = document.createElement('div');
     controls.id = 'scba-controls';
     controls.style.cssText = 'position:fixed !important;bottom:0 !important;left:0 !important;right:0 !important;background:#1a1a1a;padding:0.75rem 1rem;border-top:1px solid #333;display:flex;align-items:center;gap:0.5rem;z-index:9999;box-shadow:0 -2px 8px rgba(0,0,0,0.4);';
@@ -821,14 +821,14 @@ function renderChecklist(data) {
     document.getElementById('next-pack-btn').addEventListener('click', addNextPack);
     document.getElementById('finished-btn').addEventListener('click', showSignatureSection);
     // Auto-create first pack
-    setTimeout(() => addNextPack(), 0);
+    if (currentUnit === 'scba') setTimeout(() => addNextPack(), 0);
   }
 
   // Signature section (hidden until Finished)
   const sigSection = document.createElement('div');
   sigSection.className = 'section signature-section';
   sigSection.id = 'signature-section';
-  sigSection.style.display = data.scbaPacks > 0 ? 'none' : 'block';
+  sigSection.style.display = currentUnit === 'scba' ? 'none' : 'block';
   sigSection.innerHTML = `
     <div class="section-title">Completed By</div>
     <div class="sig-fields">
