@@ -543,7 +543,7 @@ const checklists = {
   "scba": {
     name: "SCBA Checks",
     mainItems: [],
-    scbaPacks: 4,
+    scbaPacks: 1,
     scbaBottles: 0
   },
   "squad-1": {
@@ -791,7 +791,7 @@ function renderChecklist(data) {
   for (let i = 0; i < data.scbaPacks; i++) {
     const section = document.createElement('div');
     section.className = 'section';
-    section.innerHTML = `<div class="section-title">SCBA Pack #${i + 1}</div>`;
+    section.innerHTML = `<div class="section-title">SCBA</div>`;
     scbaItems.forEach((item, j) => section.appendChild(createItemRow(item, `pack-${i}-${j}`)));
     container.appendChild(section);
   }
@@ -982,7 +982,7 @@ async function exportPDF() {
     const unit = checklists[currentUnit];
     if (unit.mainItems) unit.mainItems.forEach((label, i) => allItems.push({ label, key: `main-${i}`, section: 'Apparatus' }));
     for (let p = 0; p < (unit.scbaPacks || 0); p++) {
-      scbaItems.forEach((label, i) => allItems.push({ label, key: `pack-${p}-${i}`, section: `SCBA Pack #${p+1}` }));
+      scbaItems.forEach((label, i) => allItems.push({ label, key: `pack-${p}-${i}`, section: `SCBA` }));
     }
     for (let b = 0; b < (unit.scbaBottles || 0); b++) {
       scbaItems.forEach((label, i) => allItems.push({ label, key: `bottle-${b}-${i}`, section: `SCBA Bottle #${b+1}` }));
