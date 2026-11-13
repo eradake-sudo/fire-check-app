@@ -1067,21 +1067,22 @@ async function exportPDF() {
             tempCanvas.width = w;
             tempCanvas.height = h;
             const tctx = tempCanvas.getContext('2d');
-            // Start with white background
+            // White background
             tctx.fillStyle = '#ffffff';
             tctx.fillRect(0, 0, w, h);
-            // Draw the signature (white strokes on transparent)
+            // Draw signature
             tctx.drawImage(img, 0, 0);
             const imgData = tctx.getImageData(0, 0, w, h);
             const d = imgData.data;
             for (let i = 0; i < d.length; i += 4) {
               const r = d[i], g = d[i+1], b = d[i+2], a = d[i+3];
-              // White signature stroke (high RGB + some alpha) -> black
-              // Everything else stays white
-              if (a > 30 && r > 200 && g > 200 && b > 200) {
+              // Only pure white signature strokes (drawn on dark) become black
+              // Dark background pixels stay white
+              const isStroke = (r > 220 && g > 220 && b > 220 && a > 40);
+              if (isStroke) {
                 d[i] = 0; d[i+1] = 0; d[i+2] = 0; d[i+3] = 255;
               } else {
-                d[i] = 255; d[i+1] = 255; d[i+2] = 255; d[i+3] = 255;
+                d[i] = 255; d[i+1] = 255; d[i+2] = 255; d[i+3] = 0; // transparent bg
               }
             }
             tctx.putImageData(imgData, 0, 0);
