@@ -504,7 +504,6 @@ img.logo {
     </div>
     <div id="checklist-content"></div>
     <div class="actions">
-      <button id="print-btn" class="btn secondary">Print</button>
       <button id="export-pdf-btn" class="btn primary">Export PDF</button>
       <button id="clear-btn" class="btn danger">Clear</button>
     </div>
@@ -758,8 +757,7 @@ let scbaPackCount = 0;
 function init() {
   renderUnitGrid();
   document.getElementById('back-btn').addEventListener('click', showUnitSelect);
-  document.getElementById('print-btn').addEventListener('click', () => window.print());
-  document.getElementById('export-pdf-btn').addEventListener('click', exportPDF);
+    document.getElementById('export-pdf-btn').addEventListener('click', exportPDF);
   document.getElementById('clear-btn').addEventListener('click', clearForm);
 }
 
